@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     ROOT_PATH: str = "/"
 
     DATABASE_URL: str
+    API_KEY_GEMINI: str
 
     model_config = SettingsConfigDict(env_file=".env")
 
