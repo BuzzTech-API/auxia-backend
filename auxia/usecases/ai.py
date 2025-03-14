@@ -20,11 +20,10 @@ class AIUsecase:
         )
         return response.text
 
+
     # docs da API: https://openrouter.ai/docs/quickstart
     # docs da LLM: https://openrouter.ai/deepseek/deepseek-r1-zero:free
-    def callLLM_OpenRouter(self, request: AiRequest):
-        print(settings.API_KEY_OPENROUTER)
-        
+    def callLLM_OpenRouter(self, request: AiRequest):        
         response = requests.post(
         
         url="https://openrouter.ai/api/v1/chat/completions",
@@ -40,7 +39,8 @@ class AIUsecase:
             ),
         )
         
-        return json.loads(response.content)
+        #Isso aqui transforma num json (pq vem de um jeito muito estranho) e depois pega somente o texto por que ele devolve muita informação. 
+        return json.loads(response.content)["choices"][0]["message"]["content"]
         
         
         
