@@ -6,8 +6,12 @@ import logging
 router = APIRouter(prefix="/ai", tags=["ai"])
 
 
-@router.post("/")
-def callAI_Gemini(request: AiRequest):
-  return ai_usecase.callAI_Gemini(request.prompt)
+@router.post("/llm1")
+def callLLM1(request: AiRequest):
+  return ai_usecase.callLLM_GoogleAiStudio(request)
+
+@router.post("/llm2")
+def callLLM2(request: AiRequest):
+  return ai_usecase.callLLM_OpenRouter(request)
 
 
