@@ -48,3 +48,4 @@ uvloop==0.21.0
 virtualenv==20.29.3
 watchfiles==1.0.4
 websockets==15.0.1
+google-genai
