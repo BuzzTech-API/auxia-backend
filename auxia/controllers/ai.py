@@ -5,7 +5,7 @@ from ..schemas.ai import AiRequest
 router = APIRouter(prefix="/ai", tags=["ai"])
 
 
-@router.post("/llm")
+@router.post("/generate")
 def callLLM(request: AiRequest):
   return ai_usecase.callMainLLMs(request)
 
