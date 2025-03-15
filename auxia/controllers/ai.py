@@ -1,11 +1,16 @@
 from fastapi import APIRouter
 from ..usecases.ai import ai_usecase
 from ..schemas.ai import AiRequest
-import logging
 
 router = APIRouter(prefix="/ai", tags=["ai"])
 
 
+@router.post("/llm")
+def callLLM(request: AiRequest):
+  return ai_usecase.callMainLLMs(request)
+
+
+# Vou manter essas rotas por debug, assim podemos testar as LLMs individualmente
 @router.post("/llm1")
 def callLLM1(request: AiRequest):
   return ai_usecase.callLLM_GoogleAiStudio(request)
