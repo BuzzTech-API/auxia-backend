@@ -1,8 +1,10 @@
-from pydantic import BaseModel
+from auxia.schemas.base import BaseSchemaIn
 
-class AiRequest(BaseModel):
-  prompt: str
-  
-  class Config:
-        form_attributes = True
-        
+
+class AiRequest(BaseSchemaIn):
+    prompt: str
+
+
+class AiResponse(BaseSchemaIn):
+    response1: str
+    response2: str
