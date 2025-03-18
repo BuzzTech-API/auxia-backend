@@ -16,6 +16,19 @@ pre-commit = "^4.1.0"
 httpx = "^0.28.1"
 google-genai = "^1.5.0"
 
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+addopts = [
+  "--strict-config",
+  "--strict-markers",
+  "--ignore=docs_src",
+]
+xfail_strict = true
+junit_family = "xunit2"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest-asyncio = "^0.25.3"
 
 [build-system]
 requires = ["poetry-core"]
