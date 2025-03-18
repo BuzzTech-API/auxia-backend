@@ -5,9 +5,9 @@ from auxia.schemas.answer import AnswerRequest
 
 
 class AnswerUsecase:
-    def __init__(self) -> None:
+    def __init__(self, database: str = "api") -> None:
         self.client: AsyncIOMotorClient = db_client.get()
-        self.database: AsyncIOMotorDatabase = self.client.get_database()
+        self.database: AsyncIOMotorDatabase = self.client.get_database(database)
         self.collection = self.database.get_collection("answer")
     
     def saveAnswer(self, answer: AnswerRequest):
@@ -17,3 +17,4 @@ class AnswerUsecase:
 
 
 answer_usecase = AnswerUsecase()
+test_answer_usecase = AnswerUsecase(database="test")
