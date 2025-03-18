@@ -5,6 +5,8 @@ from httpx import AsyncClient
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from auxia.db.mongo import db_client
+from auxia.schemas.ai import AiRequest
+from tests.factories import ai_propmt_data
 
 
 @pytest.fixture(scope="session")
@@ -22,6 +24,11 @@ def mongo_client() -> AsyncIOMotorClient:
 @pytest.fixture
 def ais_url() -> str:
     return "/ai/"
+
+
+@pytest.fixture
+def ai_request() -> AiRequest:
+    return AiRequest(**ai_propmt_data())
 
 
 @pytest.fixture

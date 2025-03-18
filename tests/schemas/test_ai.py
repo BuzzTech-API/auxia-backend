@@ -37,6 +37,22 @@ def test_schemas_ai_request_return_raise():
     }
 
 
+def test_schemas_ai_request_return_raise402():
+    data = {"prompt": ""}
+
+    with pytest.raises(ValidationError) as err:
+        AiRequest.model_validate(data)
+
+    assert err.value.errors()[0] == {
+        "type": "string_too_short",
+        "loc": ("prompt",),
+        "msg": "String should have at least 1 character",
+        "input": "",
+        "ctx": {"min_length": 1},
+        "url": "https://errors.pydantic.dev/2.10/v/string_too_short",
+    }
+
+
 def test_schemas_ai_response_return_raise():
     data = {
         "response1": "Muito bem obrigado!",
