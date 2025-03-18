@@ -1,6 +1,7 @@
 import asyncio
 
 import pytest
+from httpx import AsyncClient
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from auxia.db.mongo import db_client
@@ -18,6 +19,17 @@ def mongo_client() -> AsyncIOMotorClient:
     return db_client.get()
 
 
+@pytest.fixture
+def ais_url() -> str:
+    return "/ai/"
+
+
+@pytest.fixture
+async def client() -> AsyncClient:
+    async with AsyncClient(base_url="http://localhost:8000") as ac:
+        yield ac
+
+
 @pytest.fixture(autouse=True)
 async def clear_collections(mongo_client: AsyncIOMotorClient):
     yield
@@ -28,4 +40,4 @@ async def clear_collections(mongo_client: AsyncIOMotorClient):
         if collections_name.startswith("system"):
             continue
 
-        await mongo_client.get_database()[collections_name].delete_many({})
+        # await mongo_client.get_database()[collections_name].delete_many({})
