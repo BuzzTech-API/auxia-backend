@@ -10,14 +10,20 @@ from auxia.schemas.ai import AiRequest, AiResponse
 
 class AIUsecase:
     def __init__(self) -> None:
-        pass
+        self.modelLlm1 = "gemini-2.0-flash"
+        self.modelLlm2 = "deepseek/deepseek-chat:free"
 
     def callMainLLMs(self, prompt: AiRequest) -> AiResponse:
         response1 = self.callLLM_GoogleAiStudio(prompt)
         response2 = self.callLLM_OpenRouter(prompt)
 
         if response1 is not None and response2 is not None:
-            return AiResponse(response1=response1, response2=response2)
+            return AiResponse(
+                response1=response1,
+                response2=response2,
+                modelLlm1=self.modelLlm1,
+                modelLlm2=self.modelLlm2,
+            )
         error1 = (
             "Tudo certo com o Google AI Studio "
             if response1 is not None
@@ -37,8 +43,8 @@ class AIUsecase:
         client = genai.Client(api_key=settings.API_KEY_GOOGLE_AI_STUDIO)
         try:
             response = client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=request,
+                model=self.modelLlm1,
+                contents=request.model_dump_json(),
             )
             if response.text is None:
                 raise Exception()
@@ -60,8 +66,10 @@ class AIUsecase:
                 },
                 data=json.dumps(
                     {
-                        "model": "deepseek/deepseek-chat:free",
-                        "messages": [{"role": "user", "content": request}],
+                        "model": self.modelLlm2,
+                        "messages": [
+                            {"role": "user", "content": request.model_dump_json()}
+                        ],
                     }
                 ),
             )
