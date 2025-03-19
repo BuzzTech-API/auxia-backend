@@ -5,6 +5,6 @@ from auxia.usecases.answer import answer_usecase
 
 router = APIRouter(prefix="/answer", tags=["answer"])
 
-@router.post()
+@router.post("/")
 def callLLM(request: AnswerRequest):
   return answer_usecase.saveAnswer(request)
