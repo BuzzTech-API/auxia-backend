@@ -26,14 +26,7 @@ class UserUsecase:
 
         # Inserindo...
         await self.collection.insert_one(user_data.model_dump())
-
-        return UserOut(
-            id=user_data.id,
-            usr_name=user_data.usr_name,
-            usr_email=user_data.usr_email,
-            created_at=user_data.created_at,
-            usr_is_adm=user_data.usr_is_adm,
-        )
+        return UserOut(**user_data.model_dump(exclude={"usr_password"}))
 
     # async def get_user(self, usr_email: str) -> UserOut:
     #     """Busca um usuário baseado no email."""
