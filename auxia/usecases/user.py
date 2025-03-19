@@ -1,13 +1,12 @@
 from datetime import datetime
-import uuid
+
 from fastapi import HTTPException
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from passlib.context import CryptContext
+
 from auxia.db.mongo import db_client
 from auxia.models.user import UserModel
 from auxia.schemas.usuario import UserIn, UserOut
-from bson import ObjectId
-
 
 # Configurando o hasheador de senha
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -28,8 +27,13 @@ class UserUsecase:
         # Inserindo...
         await self.collection.insert_one(user_data.model_dump())
 
-        return UserOut(**user_data.model_dump())
-    
+        return UserOut(
+            id=user_data.id,
+            usr_name=user_data.usr_name,
+            usr_email=user_data.usr_email,
+            created_at=user_data.created_at,
+            usr_is_adm=user_data.usr_is_adm,
+        )
 
     # async def get_user(self, usr_email: str) -> UserOut:
     #     """Busca um usuário baseado no email."""
@@ -51,9 +55,12 @@ class UserUsecase:
         # Convertendo o ObjectId para string e garantindo os campos exigidos
         user["id"] = str(user["_id"])  # Convertendo o ObjectId para string
         user.pop("_id", None)  # Removendo o _id original
-        user["created_at"] = user.get("created_at", datetime.now())  # Garantindo created_at
+        user["created_at"] = user.get(
+            "created_at", datetime.now()
+        )  # Garantindo created_at
 
         return UserOut(**user)
+
 
 # Instanciando para utilizar na aplicação
 user_usecase = UserUsecase()

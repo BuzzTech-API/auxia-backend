@@ -1,7 +1,10 @@
 from datetime import datetime
+from uuid import UUID
+
 from pydantic import Field
+
 from auxia.schemas.base import BaseSchemaIn
-from pydantic import Field, UUID4
+
 
 class UserBase(BaseSchemaIn):
     usr_name: str = Field(..., description="User name")
@@ -11,9 +14,8 @@ class UserBase(BaseSchemaIn):
 
 class UserIn(UserBase, BaseSchemaIn):
     usr_password: str = Field(..., description="User password")
-    
+
 
 class UserOut(UserBase, BaseSchemaIn):
-    id: str = Field()
+    id: UUID = Field()
     created_at: datetime = Field()
-    pass
