@@ -13,9 +13,9 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class UserUsecase:
-    def __init__(self) -> None:
+    def __init__(self, database: str = "api") -> None:
         self.client: AsyncIOMotorClient = db_client.get()
-        self.database: AsyncIOMotorDatabase = self.client.get_database()
+        self.database: AsyncIOMotorDatabase = self.client.get_database(database)
         self.collection = self.database.get_collection("user")
 
     async def create_user(self, user_in: UserIn) -> UserOut:
@@ -57,3 +57,4 @@ class UserUsecase:
 
 # Instanciando para utilizar na aplicação
 user_usecase = UserUsecase()
+test_user_usecase = UserUsecase(database="test")
