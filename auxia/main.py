@@ -20,7 +20,7 @@ app = App()
 app.include_router(api_router)
 
 # Resposta base do backend, tava muito nada a ver antes, se quiser que mova daqui no problem
-@app.get("/")
+@app.get("")
 def read_root():
     return "Backend Funcionando!"
 
