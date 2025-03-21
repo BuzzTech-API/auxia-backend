@@ -1,4 +1,6 @@
 def usuario_data():
+
+
     return {
         "usr_name": "Astolfo",
         "usr_email": "astolfo@gmail.com",
@@ -18,3 +20,4 @@ def ai_response_data():
         "modelLlm1": "gemini-2.0-flash",
         "modelLlm2": "deepseek/deepseek-chat:free",
     }
+

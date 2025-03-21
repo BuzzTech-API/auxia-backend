@@ -14,7 +14,10 @@ pydantic-settings = "^2.8.1"
 motor = "^3.7.0"
 pre-commit = "^4.1.0"
 httpx = "^0.28.1"
+passlib = "^1.7.4"
+bcrypt = "^4.3.0"
 google-genai = "^1.5.0"
+
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
