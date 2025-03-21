@@ -1,7 +1,8 @@
 from pydantic import Field
-from pydantic import BaseModel
+from auxia.schemas.base import BaseSchemaIn
 
-class AnswerRequest(BaseModel):
+
+class AnswerRequest(BaseSchemaIn):
   usr_id: int = Field(..., description="User ID that answered")
   ans_prompt: str = Field(..., description="Prompt used in the question for the LLMs")  
   ans_llm_answer: str = Field(..., description="LLM answer got from the prompt")
@@ -22,7 +23,3 @@ class AnswerRequest(BaseModel):
   ans_evaluation_standard_7_pontuation: int = Field(..., description="Pontuation (score) for standard 7 evaluation")
   ans_prefered_answer: bool = Field(..., description="Indicates whether this is the preferred answer (True/False)")
   ans_prefered_answer_justify: str = Field(..., description="Justification for why this is the preferred answer")
-  
-  
-  class Config:
-        form_attributes = True
