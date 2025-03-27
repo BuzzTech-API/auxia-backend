@@ -31,6 +31,10 @@ def mongo_client() -> AsyncIOMotorClient:
 def ais_url() -> str:
     return "/ai/"
 
+@pytest.fixture
+def answers_url() -> str:
+    return "/answer"
+
 
 @pytest.fixture
 def ai_request() -> AiRequest:
