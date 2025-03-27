@@ -7,4 +7,4 @@ async def test_ai_generate_should_return_sucess(ai_request: AiRequest):
 
     assert isinstance(response, AiResponse)
     assert response.modelLlm1 == "gemini-2.0-flash"
-    assert response.modelLlm1 == "deepseek/deepseek-chat:free"
+    assert response.modelLlm2 == "deepseek/deepseek-chat:free"
