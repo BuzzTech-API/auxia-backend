@@ -1,5 +1,7 @@
 from datetime import datetime
+import uuid
 
+from bson import Binary, UuidRepresentation
 from fastapi import HTTPException
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from passlib.context import CryptContext
@@ -23,6 +25,10 @@ class UserUsecase:
         # Hashear senha antes de armazenar?
         user_data = UserModel(**user_in.model_dump())
         user_data.usr_password = pwd_context.hash(user_data.usr_password)
+        
+        # Fix gambiarra do UUID para usuários de windows (por algum motivo)
+        if hasattr(user_data, "id") and isinstance(user_data.id, uuid.UUID):
+            user_data.id = Binary.from_uuid(user_data.id, uuid_representation=UuidRepresentation.STANDARD)
 
         # Inserindo...
         await self.collection.insert_one(user_data.model_dump())
