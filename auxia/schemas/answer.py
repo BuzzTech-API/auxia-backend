@@ -4,9 +4,9 @@ from auxia.schemas.base import BaseSchemaIn
 
 class AnswerRequest(BaseSchemaIn):
   usr_id: int = Field(..., description="User ID that answered")
-  ans_prompt: str = Field(..., description="Prompt used in the question for the LLMs")  
-  ans_llm_answer: str = Field(..., description="LLM answer got from the prompt")
-  ans_llm_model: str = Field(..., description="LLM model that was used to obtain the answer")
+  ans_prompt: str = Field(..., description="Prompt used in the question for the LLMs", min_length=1)  
+  ans_llm_answer: str = Field(..., description="LLM answer got from the prompt", min_length=1)
+  ans_llm_model: str = Field(..., description="LLM model that was used to obtain the answer", min_length=1)
   ans_evaluation_standard_1_justify: str = Field(..., description="Justification for the evaluation of standard 1")
   ans_evaluation_standard_1_pontuation: int = Field(..., description="Pontuation (score) for standard 1 evaluation")
   ans_evaluation_standard_2_justify: str = Field(..., description="Justification for the evaluation of standard 2")
