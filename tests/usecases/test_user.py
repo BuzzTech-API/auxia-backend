@@ -1,7 +1,8 @@
-
 import pytest
-from auxia.usecases.user import user_usecase
+
 from auxia.schemas.usuario import UserIn
+from auxia.usecases.user import user_usecase
+
 
 @pytest.mark.asyncio
 async def test_create_user(user_in: UserIn):
@@ -13,10 +14,7 @@ async def test_create_user(user_in: UserIn):
 
 
 @pytest.mark.asyncio
-async def test_get_user(user_in: UserIn):
-    # Criando um usuário de teste:
-    await user_usecase.create_user(user_in)
-
+async def test_get_user(user_in: UserIn, create_user):
     # Buscando usuário
     fetched_user = await user_usecase.get_user(user_in.usr_email)
 
