@@ -1,13 +1,13 @@
 from fastapi import status
-from httpx import AsyncClient
+from fastapi.testclient import TestClient
 
 from tests.factories import ai_propmt_data
 
 
 async def test_controller_generate_should_return_success(
-    client: AsyncClient, ais_url: str
+    client: TestClient, ais_url: str
 ):
-    response = await client.post(ais_url + "generate", json=ai_propmt_data())
+    response = client.post(ais_url + "generate", json=ai_propmt_data())
     content = response.json()
     del content["response1"]
     del content["response2"]
@@ -23,6 +23,6 @@ async def test_controller_generate_should_return_unprocesseble(
     client,
     ais_url,
 ):
-    response = await client.post(ais_url + "generate", json={"prompt": ""})
+    response = client.post(ais_url + "generate", json={"prompt": ""})
 
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY

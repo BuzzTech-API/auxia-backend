@@ -1,13 +1,14 @@
 import asyncio
 
 import pytest
-from auxia.schemas.usuario import UserIn
-from tests.factories import usuario_data
-from httpx import AsyncClient
+from fastapi.testclient import TestClient
 from motor.motor_asyncio import AsyncIOMotorClient
+
 from auxia.db.mongo import db_client
+from auxia.main import app
 from auxia.schemas.ai import AiRequest
-from tests.factories import ai_propmt_data
+from auxia.schemas.usuario import UserIn
+from tests.factories import ai_propmt_data, usuario_data
 
 
 @pytest.fixture(scope="session")
@@ -21,7 +22,7 @@ def event_loop():
 def user_in():
     return UserIn(**usuario_data())
 
-  
+
 @pytest.fixture
 def mongo_client() -> AsyncIOMotorClient:
     return db_client.get()
@@ -42,9 +43,9 @@ def ai_request() -> AiRequest:
 
 
 @pytest.fixture
-async def client() -> AsyncClient:
-    async with AsyncClient(base_url="http://localhost:8000") as ac:
-        yield ac
+async def client() -> TestClient:
+    client = TestClient(app=app)
+    return client
 
 
 @pytest.fixture(autouse=True)
@@ -58,4 +59,3 @@ async def clear_collections(mongo_client: AsyncIOMotorClient):
             continue
 
         # await mongo_client.get_database()[collections_name].delete_many({})
-
