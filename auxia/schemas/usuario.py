@@ -1,5 +1,4 @@
 from datetime import datetime
-from uuid import UUID
 
 from pydantic import Field
 
@@ -17,5 +16,4 @@ class UserIn(UserBase, BaseSchemaIn):
 
 
 class UserOut(UserBase, BaseSchemaIn):
-    id: UUID = Field()
     created_at: datetime = Field()
