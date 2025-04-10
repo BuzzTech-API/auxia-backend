@@ -7,6 +7,14 @@ from auxia.core.config import settings
 from auxia.core.excepetions import AIGenerateException
 from auxia.schemas.ai import AiRequest, AiResponse
 
+BASE_PROMPT = """
+Baseado no contexto abaixo:
+
+{context}
+
+Responda utilizando o contexto a seguinte pergunta: {prompt}
+"""
+
 
 class AIUsecase:
     def __init__(self) -> None:
