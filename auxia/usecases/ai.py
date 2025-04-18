@@ -31,6 +31,11 @@ class AIUsecase:
         )
 
     def callMainLLMs(self, prompt: AiRequest) -> AiResponse:
+        context = self.getContext(prompt=prompt.prompt, embedding=None)
+        prompt_context = self.getPromptWithContext(
+            question=prompt.prompt, context=context
+        )
+        prompt.prompt = prompt_context
         response1 = self.callLLM_GoogleAiStudio(prompt)
         response2 = self.callLLM_OpenRouter(prompt)
 
