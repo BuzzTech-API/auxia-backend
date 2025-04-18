@@ -1,10 +1,14 @@
 import json
 
 import requests
+from chromadb import Collection
+from chromadb.api import ClientAPI
+from chromadb.api.types import Document, Embedding, OneOrMany, PyEmbedding
 from google import genai
 
 from auxia.core.config import settings
 from auxia.core.excepetions import AIGenerateException
+from auxia.db.chroma import db_client_chroma
 from auxia.schemas.ai import AiRequest, AiResponse
 
 BASE_PROMPT = """
@@ -20,6 +24,10 @@ class AIUsecase:
     def __init__(self) -> None:
         self.modelLlm1 = "gemini-2.0-flash"
         self.modelLlm2 = "deepseek/deepseek-chat:free"
+        self.client: ClientAPI = db_client_chroma.get()
+        self.collection: Collection = self.client.get_collection(
+            name="test_collection_chunknized"
+        )
 
     def callMainLLMs(self, prompt: AiRequest) -> AiResponse:
         response1 = self.callLLM_GoogleAiStudio(prompt)
@@ -92,6 +100,14 @@ class AIUsecase:
         except (KeyError, json.JSONDecodeError) as e:
             print(f"Erro no parse da resposta do OpenRouter: {e}")
             return None
+
+    def getContext(
+        self,
+        embedding: OneOrMany[Embedding] | OneOrMany[PyEmbedding] | None,
+        prompt: OneOrMany[Document] | None,
+    ):
+        context = self.collection.query(query_embeddings=embedding, query_texts=prompt)
+        return context
 
 
 ai_usecase = AIUsecase()
