@@ -1,10 +1,11 @@
 import json
 
 import requests
-from chromadb import Collection
+from chromadb import Collection, QueryResult
 from chromadb.api import ClientAPI
 from chromadb.api.types import Document, Embedding, OneOrMany, PyEmbedding
 from google import genai
+from langchain.prompts import ChatPromptTemplate
 
 from auxia.core.config import settings
 from auxia.core.excepetions import AIGenerateException
@@ -16,7 +17,7 @@ Baseado no contexto abaixo:
 
 {context}
 
-Responda utilizando o contexto a seguinte pergunta: {prompt}
+Responda utilizando o contexto a seguinte pergunta: {question}
 """
 
 
@@ -105,9 +106,19 @@ class AIUsecase:
         self,
         embedding: OneOrMany[Embedding] | OneOrMany[PyEmbedding] | None,
         prompt: OneOrMany[Document] | None,
-    ):
+    ) -> QueryResult:
         context = self.collection.query(query_embeddings=embedding, query_texts=prompt)
         return context
+
+    def getPromptWithContext(self, context: QueryResult, question: str) -> str:
+        context_text = ""
+        documents = context["documents"]
+        if documents:
+            for docs in documents:
+                context_text = "\n\n---\n\n".join(docs)
+        prompt_template = ChatPromptTemplate.from_template(BASE_PROMPT)
+        prompt = prompt_template.format(context=context_text, question=question)
+        return prompt
 
 
 ai_usecase = AIUsecase()
