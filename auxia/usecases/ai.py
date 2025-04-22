@@ -1,19 +1,41 @@
 import json
 
 import requests
+from chromadb import Collection, QueryResult
+from chromadb.api import ClientAPI
+from chromadb.api.types import Document, Embedding, OneOrMany, PyEmbedding
 from google import genai
+from langchain.prompts import ChatPromptTemplate
 
 from auxia.core.config import settings
 from auxia.core.excepetions import AIGenerateException
+from auxia.db.chroma import db_client_chroma
 from auxia.schemas.ai import AiRequest, AiResponse
+
+BASE_PROMPT = """
+Baseado no contexto abaixo:
+
+{context}
+
+Responda utilizando o contexto a seguinte pergunta: {question}
+"""
 
 
 class AIUsecase:
     def __init__(self) -> None:
         self.modelLlm1 = "gemini-2.0-flash"
         self.modelLlm2 = "deepseek/deepseek-chat:free"
+        self.client: ClientAPI = db_client_chroma.get()
+        self.collection: Collection = self.client.get_collection(
+            name="test_collection_chunknized"
+        )
 
     def callMainLLMs(self, prompt: AiRequest) -> AiResponse:
+        context = self.getContext(prompt=prompt.prompt, embedding=None)
+        prompt_context = self.getPromptWithContext(
+            question=prompt.prompt, context=context
+        )
+        prompt.prompt = prompt_context
         response1 = self.callLLM_GoogleAiStudio(prompt)
         response2 = self.callLLM_OpenRouter(prompt)
 
@@ -84,6 +106,24 @@ class AIUsecase:
         except (KeyError, json.JSONDecodeError) as e:
             print(f"Erro no parse da resposta do OpenRouter: {e}")
             return None
+
+    def getContext(
+        self,
+        embedding: OneOrMany[Embedding] | OneOrMany[PyEmbedding] | None,
+        prompt: OneOrMany[Document] | None,
+    ) -> QueryResult:
+        context = self.collection.query(query_embeddings=embedding, query_texts=prompt)
+        return context
+
+    def getPromptWithContext(self, context: QueryResult, question: str) -> str:
+        context_text = ""
+        documents = context["documents"]
+        if documents:
+            for docs in documents:
+                context_text = "\n\n---\n\n".join(docs)
+        prompt_template = ChatPromptTemplate.from_template(BASE_PROMPT)
+        prompt = prompt_template.format(context=context_text, question=question)
+        return prompt
 
 
 ai_usecase = AIUsecase()

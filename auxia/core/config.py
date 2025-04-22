@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     ADM_EMAIL: str
     ADM_PASSWORD: str
     ADM_NAME: str
+    CHROMA_DB_PATH: str
 
     model_config = SettingsConfigDict(env_file=".env")
 
