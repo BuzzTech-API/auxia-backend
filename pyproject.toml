@@ -20,6 +20,7 @@ google-genai = "^1.5.0"
 chromadb = "^1.0.3"
 onnxruntime = "^1.21.0"
 langchain = "^0.3.23"
+sentence-transformers = "^2.2.2"
 
 
 [tool.pytest.ini_options]
