@@ -59,6 +59,30 @@ class AIUsecase:
 
         raise AIGenerateException(message=error1 + error2)
 
+    def callMainLLMsNoRag(self, prompt: AiRequest) -> AiResponse:
+        response1 = self.callLLM_GoogleAiStudio(prompt)
+        response2 = self.callLLM_OpenRouter(prompt)
+
+        if response1 is not None and response2 is not None:
+            return AiResponse(
+                response1=response1,
+                response2=response2,
+                modelLlm1=self.modelLlm1,
+                modelLlm2=self.modelLlm2,
+            )
+        error1 = (
+            "Tudo certo com o Google AI Studio "
+            if response1 is not None
+            else "Erro no Google AI Studio"
+        )
+        error2 = (
+            "Tudo certo com o OpenRouter"
+            if response2 is not None
+            else "Erro no OpenRouter"
+        )
+
+        raise AIGenerateException(message=error1 + error2)
+
     # docs da API: https://ai.google.dev/gemini-api/docs
     # site da LLM (outras também podem ser encontradas aqui): https://ai.google.dev/api?lang=python
     def callLLM_GoogleAiStudio(self, request: AiRequest):
