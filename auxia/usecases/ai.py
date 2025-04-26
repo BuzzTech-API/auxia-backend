@@ -11,6 +11,7 @@ from auxia.core.config import settings
 from auxia.core.excepetions import AIGenerateException
 from auxia.db.chroma import db_client_chroma
 from auxia.schemas.ai import AiRequest, AiResponse
+from auxia.usecases.embedding import embedding_usecase
 
 BASE_PROMPT = """
 Baseado no contexto abaixo:
@@ -31,7 +32,9 @@ class AIUsecase:
         )
 
     def callMainLLMs(self, prompt: AiRequest) -> AiResponse:
-        context = self.getContext(prompt=prompt.prompt, embedding=None)
+        context = self.getContext(
+            prompt=None, embedding=embedding_usecase.embed_text(text=prompt.prompt)
+        )
         prompt_context = self.getPromptWithContext(
             question=prompt.prompt, context=context
         )
@@ -60,8 +63,8 @@ class AIUsecase:
         raise AIGenerateException(message=error1 + error2)
 
     def callMainLLMsNoRag(self, prompt: AiRequest) -> AiResponse:
-        response1 = self.callLLM_GoogleAiStudio(prompt)
         response2 = self.callLLM_OpenRouter(prompt)
+        response1 = self.callLLM_GoogleAiStudio(prompt)
 
         if response1 is not None and response2 is not None:
             return AiResponse(
@@ -142,9 +145,18 @@ class AIUsecase:
     def getPromptWithContext(self, context: QueryResult, question: str) -> str:
         context_text = ""
         documents = context["documents"]
-        if documents:
-            for docs in documents:
-                context_text = "\n\n---\n\n".join(docs)
+        distances = context["distances"]
+
+        if documents and distances:
+            filtered_docs = []
+            for doc_list, dist_list in zip(documents, distances):
+                for doc, dist in zip(doc_list, dist_list):
+                    print(f"distancia {dist} doc:{doc}")
+                    if dist < 0.8:
+                        filtered_docs.append(doc)
+
+            context_text = "\n\n---\n\n".join(filtered_docs)
+
         prompt_template = ChatPromptTemplate.from_template(BASE_PROMPT)
         prompt = prompt_template.format(context=context_text, question=question)
         return prompt
