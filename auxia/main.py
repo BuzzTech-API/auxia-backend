@@ -26,6 +26,7 @@ async def lifespan(app: FastAPI):
     user_data = UserIn(
         usr_email=settings.ADM_EMAIL,
         usr_is_adm=True,
+        usr_is_active=True,
         usr_name=settings.ADM_NAME,
         usr_password=settings.ADM_PASSWORD,
     )

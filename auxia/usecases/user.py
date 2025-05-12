@@ -27,40 +27,49 @@ class UserUsecase:
         user_out = UserOut(**user)
         return user_out
 
-    async def create_user(self, user_in: UserIn) -> UserOut:
+    async def get_users(self) -> list[UserOut]:
+        """Busca um usuário baseado no email."""
+        users: list[UserOut] = []
+        for user in await self.collection.find({}).to_list():
+            user_out = UserOut(**user)
+            users.append(user_out)
+        return users
+
+    async def create_user(self, user_in: UserIn):
         """Cria um novo usuário no banco."""
-        # Hashear senha antes de armazenar?
         user_data = UserModel(**user_in.model_dump())
         try:
-            user_by_email = await self.get_user(usr_email=user_data.usr_email)
+            user_by_email = await self.verify_email_is_signup(
+                usr_email=user_data.usr_email
+            )
             if user_by_email:
                 raise BaseException(
                     message="Email já cadastrado no sistema",
                 )
 
-        except Exception:
-            pass
-        finally:
             user_data.usr_password = pwd_context.hash(user_data.usr_password)
 
             await self.collection.insert_one(user_data.model_dump())
             return UserOut(**user_data.model_dump(exclude={"usr_password"}))
+        except Exception:
+            pass
 
-    # async def get_user(self, usr_email: str) -> UserOut:
-    #    """Busca um usuário baseado no email."""
-    #    user = await self.collection.find_one({"usr_email": usr_email})
+    async def verify_email_is_signup(self, usr_email: str) -> bool:
+        """Busca um usuário baseado no email."""
+        user = await self.collection.find_one({"usr_email": usr_email})
 
-    #    if not user:
-    #        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+        if not user:
+            return False
 
-    #    # Convertendo o ObjectId para string e garantindo os campos exigidos
-    #    user["id"] = str(user["_id"])  # Convertendo o ObjectId para string
-    #    user.pop("_id", None)  # Removendo o _id original
-    #    user["created_at"] = user.get(
-    #        "created_at", datetime.now()
-    #    )  # Garantindo created_at
+        return True
 
-    #    return UserOut(**user)
+    async def get_user_with_password(self, usr_email: str) -> UserIn:
+        """Busca um usuário baseado no email."""
+        user = await self.collection.find_one({"usr_email": usr_email})
+        if not user:
+            raise NotFoundExcpection(message="Usuário não encontrado")
+
+        return UserIn(**user)
 
 
 # Instanciando para utilizar na aplicação
