@@ -14,13 +14,14 @@ pydantic-settings = "^2.8.1"
 motor = "^3.7.0"
 pre-commit = "^4.1.0"
 httpx = "^0.28.1"
-passlib = "^1.7.4"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 bcrypt = "^4.3.0"
 google-genai = "^1.5.0"
 chromadb = "^1.0.3"
 onnxruntime = "^1.21.0"
 langchain = "^0.3.23"
 sentence-transformers = "^2.2.2"
+pyjwt = "^2.10.1"
 
 
 [tool.pytest.ini_options]
