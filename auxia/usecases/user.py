@@ -4,7 +4,7 @@ from passlib.context import CryptContext
 from auxia.core.excepetions import BaseException, NotFoundExcpection
 from auxia.db.mongo import db_client
 from auxia.models.user import UserModel
-from auxia.schemas.usuario import UserIn, UserOut
+from auxia.schemas.usuario import UserIn, UserOut, UserUpdate, UserUpdateMe
 
 # Configurando o hasheador de senha
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -70,6 +70,57 @@ class UserUsecase:
             raise NotFoundExcpection(message="Usuário não encontrado")
 
         return UserIn(**user)
+
+    async def update_user(self, usr_email: str, user_update: UserUpdate) -> UserOut:
+        """Atualiza campos de um usuário existente."""
+        existing = await self.collection.find_one({"usr_email": usr_email})
+        if not existing:
+            raise NotFoundExcpection(message="Usuário não encontrado")
+
+        # Extrai apenas os campos que vieram no payload
+        update_data = user_update.model_dump(exclude_unset=True)
+
+        # Se a senha for atualizada, faz o hash
+        if "usr_password" in update_data:
+            update_data["usr_password"] = pwd_context.hash(update_data["usr_password"])
+
+        if update_data:
+            await self.collection.update_one(
+                {"usr_email": usr_email}, {"$set": update_data}
+            )
+
+        # Se o email mudou, busque pelo novo; caso contrário, pelo original
+        lookup_email = update_data.get("usr_email", usr_email)
+        updated = await self.collection.find_one({"usr_email": lookup_email})
+        if not updated:
+            raise NotFoundExcpection(message="Usuário não encontrado")
+
+        return UserOut(**updated)
+
+    async def update_user_me(
+        self, usr_email: str, user_update: UserUpdateMe
+    ) -> UserOut:
+        """Atualiza campos de um usuário existente."""
+        existing = await self.collection.find_one({"usr_email": usr_email})
+        if not existing:
+            raise NotFoundExcpection(message="Usuário não encontrado")
+
+        # Extrai apenas os campos que vieram no payload
+        update_data = user_update.model_dump(exclude_unset=True)
+
+        # Se a senha for atualizada, faz o hash
+        if "usr_password" in update_data:
+            update_data["usr_password"] = pwd_context.hash(update_data["usr_password"])
+
+        if update_data:
+            await self.collection.update_one(
+                {"usr_email": usr_email}, {"$set": update_data}
+            )
+
+        updated = await self.collection.find_one({"usr_email": usr_email})
+        if not updated:
+            raise NotFoundExcpection(message="Usuário não encontrado")
+        return UserOut(**updated)
 
 
 # Instanciando para utilizar na aplicação
