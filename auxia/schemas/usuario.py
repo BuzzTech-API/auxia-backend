@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from typing import Optional
 from pydantic import Field
 
 from auxia.schemas.base import BaseSchemaIn
@@ -18,3 +19,16 @@ class UserIn(UserBase, BaseSchemaIn):
 
 class UserOut(UserBase, BaseSchemaIn):
     created_at: datetime = Field()
+
+
+class UserUpdate(BaseSchemaIn):
+    usr_name: Optional[str] = Field(None, description="User name")
+    usr_email: Optional[str] = Field(None, description="User email")
+    usr_password: Optional[str] = Field(None, description="User password")
+    usr_is_adm: Optional[bool] = Field(None, description="Is or not adm")
+    usr_is_active: Optional[bool] = Field(None, description="User is Active")
+
+
+class UserUpdateMe(BaseSchemaIn):
+    usr_name: Optional[str] = Field(None, description="User name")
+    usr_password: Optional[str] = Field(None, description="User password")
