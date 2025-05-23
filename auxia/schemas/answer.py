@@ -14,10 +14,10 @@ class AnswerRequest(BaseSchemaIn):
     ans_llm_model: str = Field(
         ..., description="LLM model that was used to obtain the answer", min_length=1
     )
-    ans_relevancia_resposta_justify: str = Field(
+    ans_aderencia_prompt_justify: str = Field(
         ..., description="Justification for the evaluation of standard 1"
     )
-    ans_relevancia_resposta_pontuation: int = Field(
+    ans_aderencia_prompt_pontuation: int = Field(
         ..., description="Pontuation (score) for standard 1 evaluation"
     )
     ans_coerencia_clareza_justify: str = Field(
@@ -38,23 +38,17 @@ class AnswerRequest(BaseSchemaIn):
     ans_exposicao_justificativa_pontuation: int = Field(
         ..., description="Pontuation (score) for standard 4 evaluation"
     )
-    ans_seguiu_instrucoes_justify: str = Field(
+    ans_idioma_pergunta_mesmo_resposta_justify: str = Field(
         ..., description="Justification for the evaluation of standard 5"
     )
-    ans_seguiu_instrucoes_pontuation: int = Field(
+    ans_idioma_pergunta_mesmo_resposta_pontuation: int = Field(
         ..., description="Pontuation (score) for standard 5 evaluation"
     )
-    ans_idioma_pergunta_mesmo_resposta_justify: str = Field(
+    ans_resposta_agressiva_ofensiva_justify: str = Field(
         ..., description="Justification for the evaluation of standard 6"
     )
-    ans_idioma_pergunta_mesmo_resposta_pontuation: int = Field(
-        ..., description="Pontuation (score) for standard 6 evaluation"
-    )
-    ans_resposta_agressiva_ofensiva_justify: str = Field(
-        ..., description="Justification for the evaluation of standard 7"
-    )
     ans_resposta_agressiva_ofensiva_pontuation: int = Field(
-        ..., description="Pontuation (score) for standard 7 evaluation"
+        ..., description="Pontuation (score) for standard 6 evaluation"
     )
     ans_prefered_answer: str = Field(
         ..., description="Indicates whether this is the preferred answer"
