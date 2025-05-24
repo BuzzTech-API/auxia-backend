@@ -121,7 +121,21 @@ class UserUsecase:
         if not updated:
             raise NotFoundExcpection(message="Usuário não encontrado")
         return UserOut(**updated)
+    
+    async def delete_user(self, usr_email: str) -> UserOut:
+        """deleta usuário"""
+        existing = await self.collection.find_one({"usr_email": usr_email})
+        if not existing:
+            raise NotFoundExcpection(message="Usuário não encontrado")
+        
+        result = await self.collection.delete_one({"usr_email": usr_email})
 
+        if result.deleted_count == 0:
+            raise Exception("Erro ao deletar o usuário")  
+
+
+        return UserOut(**existing)
+    
 
 # Instanciando para utilizar na aplicação
 user_usecase = UserUsecase()

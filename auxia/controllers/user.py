@@ -53,3 +53,12 @@ async def update_me(
     return await user_usecase.update_user_me(
         usr_email=current_user.usr_email, user_update=user
     )
+
+@router.delete("/{usr_email}")
+async def delete(
+     current_user: Annotated[
+        UserOut, Security(get_current_active_user, scopes=["users"])
+    ],
+    usr_email: str,
+):
+    return await user_usecase.delete_user(usr_email)
