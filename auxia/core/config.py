@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     ADM_NAME: str
     CHROMA_DB_PATH: str
     SECRET_KEY: str
+    REFRESH_KEY:str
 
     model_config = SettingsConfigDict(env_file=".env")
 
