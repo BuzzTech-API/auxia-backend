@@ -15,6 +15,9 @@ def callLLM(request: AiRequest) -> AiResponse:
 def callLLMNoRag(request: AiRequest) -> AiResponse:
     return ai_usecase.callMainLLMsNoRag(request)
 
+@router.post("/generaterag")
+def callLLMRag(request: AiRequest) -> AiResponse:
+    return ai_usecase.callMainLLMsAllRag(request)
 
 # Vou manter essas rotas por debug, assim podemos testar as LLMs individualmente
 @router.post("/llm1")
