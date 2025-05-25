@@ -1,5 +1,5 @@
 import json
-
+import random
 import requests
 from chromadb import Collection, QueryResult
 from chromadb.api import ClientAPI
@@ -21,6 +21,14 @@ Baseado no contexto abaixo:
 Responda utilizando o contexto a seguinte pergunta: {question}
 """
 
+# Cenários de randomização: (primeiro modelo, usa RAG?, segundo modelo, usa RAG?)
+_SCENARIOS = [
+    ("llm1", True,  "llm1", False),
+    ("llm1", True,  "llm2", False),
+    ("llm2", True,  "llm2", False),
+    ("llm2", True,  "llm1", False),
+    ("llm1", True,  "llm2", True),
+]
 
 class AIUsecase:
     def __init__(self) -> None:
@@ -31,17 +39,77 @@ class AIUsecase:
             name="test_collection_chunknized"
         )
 
-    def callMainLLMs(self, prompt: AiRequest) -> AiResponse:
-        context = self.getContext(
-            prompt=None, embedding=embedding_usecase.embed_text(text=prompt.prompt)
-        )
-        prompt_context = self.getPromptWithContext(
-            question=prompt.prompt, context=context
-        )
-        prompt.prompt = prompt_context
-        response1 = self.callLLM_GoogleAiStudio(prompt)
-        response2 = self.callLLM_OpenRouter(prompt)
+    def callMainLLMs(self, request: AiRequest) -> AiResponse:
+        # Seleciona cenário aleatório
+        first_key, first_rag, second_key, second_rag = random.choice(_SCENARIOS)
 
+        def prepare_request(use_rag: bool) -> str:
+            if use_rag:
+                # Gera embedding e contexto
+                embedding = embedding_usecase.embed_text(text=request.prompt)
+                context = self.getContext(embedding=embedding, prompt=None)
+                return self.getPromptWithContext(context=context, question=request.prompt)
+            # sem RAG: usa prompt original
+            return request.prompt
+
+        # Prepara prompts para cada chamada
+        prompt1 = prepare_request(first_rag)
+        prompt2 = prepare_request(second_rag)
+
+        # Constroi objetos de requisição
+        req1 = AiRequest(prompt=prompt1)
+        req2 = AiRequest(prompt=prompt2)
+
+        # Executa chamadas às LLMs
+        if first_key == "llm1":
+            response1 = self.callLLM_GoogleAiStudio(req1)
+            model1 = self.modelLlm1
+        else:
+            response1 = self.callLLM_OpenRouter(req1)
+            model1 = self.modelLlm2
+
+        if second_key == "llm1":
+            response2 = self.callLLM_GoogleAiStudio(req2)
+            model2 = self.modelLlm1
+        else:
+            response2 = self.callLLM_OpenRouter(req2)
+            model2 = self.modelLlm2
+
+        # Verifica erros
+        if response1 is not None and response2 is not None:
+            return AiResponse(
+                response1=response1,
+                response2=response2,
+                modelLlm1=model1,
+                modelLlm2=model2,
+            )
+        err1 = "Tudo certo com a primeira LLM" if response1 is not None else "Erro na primeira LLM"
+        err2 = "Tudo certo com a segunda LLM"  if response2 is not None else "Erro na segunda LLM"
+        raise AIGenerateException(message=err1 + "; " + err2)
+
+    def callMainLLMsAllRag(self, request: AiRequest) -> AiResponse:
+        """
+        Chama os dois LLMs sempre usando RAG:
+        1) gera embedding
+        2) busca contexto
+        3) formata prompt
+        4) envia para cada LLM
+        """
+        # 1. embedding e contexto
+        embedding = embedding_usecase.embed_text(text=request.prompt)
+        context = self.getContext(embedding=embedding, prompt=None)
+        prompt_with_context = self.getPromptWithContext(
+            context=context,
+            question=request.prompt
+        )
+        # 2. prepara nova requisição
+        rag_req = AiRequest(prompt=prompt_with_context)
+
+        # 3. chama ambas as LLMs
+        response1 = self.callLLM_GoogleAiStudio(rag_req)
+        response2 = self.callLLM_OpenRouter(rag_req)
+
+        # 4. validação e retorno
         if response1 is not None and response2 is not None:
             return AiResponse(
                 response1=response1,
@@ -49,23 +117,15 @@ class AIUsecase:
                 modelLlm1=self.modelLlm1,
                 modelLlm2=self.modelLlm2,
             )
-        error1 = (
-            "Tudo certo com o Google AI Studio "
-            if response1 is not None
-            else "Erro no Google AI Studio"
-        )
-        error2 = (
-            "Tudo certo com o OpenRouter"
-            if response2 is not None
-            else "Erro no OpenRouter"
-        )
+        err1 = "Erro no Google AI Studio" if response1 is None else ""
+        err2 = "Erro no OpenRouter"      if response2 is None else ""
+        raise AIGenerateException(message=f"{err1} {err2}".strip())
 
-        raise AIGenerateException(message=error1 + error2)
 
     def callMainLLMsNoRag(self, prompt: AiRequest) -> AiResponse:
+        # Mantém comportamento original: sem RAG
         response2 = self.callLLM_OpenRouter(prompt)
         response1 = self.callLLM_GoogleAiStudio(prompt)
-
         if response1 is not None and response2 is not None:
             return AiResponse(
                 response1=response1,
@@ -73,21 +133,10 @@ class AIUsecase:
                 modelLlm1=self.modelLlm1,
                 modelLlm2=self.modelLlm2,
             )
-        error1 = (
-            "Tudo certo com o Google AI Studio "
-            if response1 is not None
-            else "Erro no Google AI Studio"
-        )
-        error2 = (
-            "Tudo certo com o OpenRouter"
-            if response2 is not None
-            else "Erro no OpenRouter"
-        )
+        err1 = "Tudo certo com o Google AI Studio" if response1 is not None else "Erro no Google AI Studio"
+        err2 = "Tudo certo com o OpenRouter"      if response2 is not None else "Erro no OpenRouter"
+        raise AIGenerateException(message=err1 + "; " + err2)
 
-        raise AIGenerateException(message=error1 + error2)
-
-    # docs da API: https://ai.google.dev/gemini-api/docs
-    # site da LLM (outras também podem ser encontradas aqui): https://ai.google.dev/api?lang=python
     def callLLM_GoogleAiStudio(self, request: AiRequest):
         client = genai.Client(api_key=settings.API_KEY_GOOGLE_AI_STUDIO)
         try:
@@ -97,36 +146,26 @@ class AIUsecase:
             )
             if response.text is None:
                 raise Exception()
-
             return response.text[:-2]
         except Exception as e:
             print(f"Erro ao Chamar Google AI Studio: {e}")
             return None
 
-    # docs da API: https://openrouter.ai/docs/quickstart
-    # docs da LLM: https://openrouter.ai/deepseek/deepseek-r1-zero:free
     def callLLM_OpenRouter(self, request: AiRequest):
         try:
             response = requests.post(
                 url="https://openrouter.ai/api/v1/chat/completions",
                 headers={
-                    "Authorization": "Bearer " + settings.API_KEY_OPENROUTER + "",
+                    "Authorization": "Bearer " + settings.API_KEY_OPENROUTER,
                     "Content-Type": "application/json",
                 },
-                data=json.dumps(
-                    {
-                        "model": self.modelLlm2,
-                        "messages": [
-                            {"role": "user", "content": request.model_dump_json()}
-                        ],
-                    }
-                ),
+                data=json.dumps({
+                    "model": self.modelLlm2,
+                    "messages": [{"role": "user", "content": request.model_dump_json()}],
+                }),
             )
             response.raise_for_status()
-
-            # Isso aqui formata num json (pq vem de um jeito muito estranho) e depois pega somente o texto por que ele devolve muita informação.
             return json.loads(response.content)["choices"][0]["message"]["content"]
-
         except requests.exceptions.RequestException as e:
             print(f"Erro ao chamar OpenRouter (Request Error): {e}")
             return None
@@ -139,27 +178,27 @@ class AIUsecase:
         embedding: OneOrMany[Embedding] | OneOrMany[PyEmbedding] | None,
         prompt: OneOrMany[Document] | None,
     ) -> QueryResult:
-        context = self.collection.query(query_embeddings=embedding, query_texts=prompt)
-        return context
+        # Solicita metadados na query para capturar fonte
+        return self.collection.query(
+            query_embeddings=embedding,
+            query_texts=prompt,
+            include=["documents", "distances", "metadatas"]
+        )
 
     def getPromptWithContext(self, context: QueryResult, question: str) -> str:
-        context_text = ""
-        documents = context["documents"]
-        distances = context["distances"]
-
-        if documents and distances:
-            filtered_docs = []
-            for doc_list, dist_list in zip(documents, distances):
-                for doc, dist in zip(doc_list, dist_list):
-                    print(f"distancia {dist} doc:{doc}")
-                    if dist < 0.8:
-                        filtered_docs.append(doc)
-
-            context_text = "\n\n---\n\n".join(filtered_docs)
-
+        chunks = []
+        docs = context["documents"]
+        dists = context["distances"]
+        metas = context.get("metadatas", [])
+        for i, (doc_list, dist_list) in enumerate(zip(docs, dists)):
+            for j, (doc, dist) in enumerate(zip(doc_list, dist_list)):
+                if dist < 0.8:
+                    meta = metas[i][j] if metas and i < len(metas) and j < len(metas[i]) else {}
+                    fonte = meta.get("source", "desconhecida")
+                    chunks.append(f"{doc}\n\nFonte: {fonte}")
+        context_text = "\n\n---\n\n".join(chunks)
         prompt_template = ChatPromptTemplate.from_template(BASE_PROMPT)
-        prompt = prompt_template.format(context=context_text, question=question)
-        return prompt
-
+        return prompt_template.format(context=context_text, question=question)
 
 ai_usecase = AIUsecase()
+
