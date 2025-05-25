@@ -1,3 +1,4 @@
+from typing import Dict
 from pydantic import Field
 
 from auxia.schemas.base import BaseSchemaIn
@@ -56,3 +57,13 @@ class AnswerRequest(BaseSchemaIn):
     ans_prefered_answer_justify: str = Field(
         ..., description="Justification for why this is the preferred answer"
     )
+
+class AnswerExport(BaseSchemaIn):
+    prompt: str
+    completion: str
+    model: str
+    scores: Dict[str, int]
+    justifications: Dict[str, str]
+    preferred: bool
+    preferred_justify: str
+

@@ -34,7 +34,7 @@ async def token_endpoint(
                 },
             )
 
-        roles = ["me", "awnsers"] + (["users"] if user.usr_is_adm else [])
+        roles = ["me", "awnsers"] + (["users", "export"] if user.usr_is_adm else [])
         expires_delta = timedelta(minutes=auth_usecase.ACCESS_TOKEN_EXPIRE_MINUTES)
 
         access = auth_usecase.create_access_token(

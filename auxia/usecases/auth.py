@@ -21,6 +21,7 @@ oauth2_scheme = OAuth2PasswordBearer(
         "me": "Acessar dados do próprio usuário",
         "users": "Gerenciar usuários",
         "awnsers": "Criar avaliações",
+        "export": "Exporta as avaliações em formato para fine tuning",
     },
 )
 
@@ -173,7 +174,7 @@ class AuthUsecase:
 
         # emite novos tokens
         user = await self.user_usecase.get_user(usr_email=doc["userId"])
-        roles = ["me", "awnsers"] + (["users"] if user.usr_is_adm else [])
+        roles = ["me", "awnsers"] + (["users", "export"] if user.usr_is_adm else [])
         access_expires = timedelta(minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES)
 
         new_access = self.create_access_token(
