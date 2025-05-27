@@ -137,6 +137,27 @@ class UserUsecase:
         return UserOut(**existing)
     
 
+    async def reset_password(self, usr_email: str, new_password: str):
+        existing = await self.collection.find_one({"usr_email": usr_email})
+        if not existing:
+            raise NotFoundExcpection(message="Usuário não encontrado")
+
+        hashed_password = pwd_context.hash(new_password)
+
+        await self.collection.update_one(
+            {"usr_email": usr_email},
+            {"$set": {"usr_password": hashed_password}}
+        )
+
+        updated_user = await self.collection.find_one({"usr_email": usr_email})
+        if not updated_user:
+            raise NotFoundExcpection(message="Usuário não encontrado após atualização")
+
+        return {"msg": "Senha redefinida com sucesso"}
+
+
+
+
 # Instanciando para utilizar na aplicação
 user_usecase = UserUsecase()
 test_user_usecase = UserUsecase(database="test")
