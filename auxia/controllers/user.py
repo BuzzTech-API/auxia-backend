@@ -1,9 +1,10 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, Security
 
-from auxia.schemas.usuario import UserIn, UserOut, UserUpdate, UserUpdateMe
+from auxia.schemas.usuario import UserIn, UserOut, UserUpdate, UserUpdateMe, PasswordReset
 from auxia.usecases.user import user_usecase
 from auxia.usecases.auth import get_current_active_user
+
 
 router = APIRouter(prefix="/user", tags=["user"])
 
@@ -62,3 +63,15 @@ async def delete(
     usr_email: str,
 ):
     return await user_usecase.delete_user(usr_email)
+
+
+
+@router.patch("/reset-password")
+async def reset_password(
+    current_user: Annotated[UserOut, Security(get_current_active_user, scopes=["users"])],
+    password_data: PasswordReset
+):
+    return await user_usecase.reset_password(
+        password_data.usr_email, 
+        password_data.new_password
+    )

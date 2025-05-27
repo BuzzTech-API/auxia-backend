@@ -1,0 +1,154 @@
+📦auxia-backend
+ ┣ 📂.pytest_cache
+ ┃ ┣ 📂v
+ ┃ ┃ ┗ 📂cache
+ ┃ ┃ ┃ ┣ 📜lastfailed
+ ┃ ┃ ┃ ┣ 📜nodeids
+ ┃ ┃ ┃ ┗ 📜stepwise
+ ┃ ┣ 📜.gitignore
+ ┃ ┣ 📜CACHEDIR.TAG
+ ┃ ┗ 📜README.md
+ ┣ 📂auxia
+ ┃ ┣ 📂controllers
+ ┃ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┃ ┣ 📜ai.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜ai.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜answer.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜answer.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜auth.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜user.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜user.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜__init__.cpython-310.pyc
+ ┃ ┃ ┃ ┗ 📜__init__.cpython-312.pyc
+ ┃ ┃ ┣ 📜ai.py
+ ┃ ┃ ┣ 📜answer.py
+ ┃ ┃ ┣ 📜auth.py
+ ┃ ┃ ┣ 📜user.py
+ ┃ ┃ ┗ 📜__init__.py
+ ┃ ┣ 📂core
+ ┃ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┃ ┣ 📜config.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜config.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜excepetions.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜excepetions.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜__init__.cpython-310.pyc
+ ┃ ┃ ┃ ┗ 📜__init__.cpython-312.pyc
+ ┃ ┃ ┣ 📜config.py
+ ┃ ┃ ┣ 📜excepetions.py
+ ┃ ┃ ┗ 📜__init__.py
+ ┃ ┣ 📂db
+ ┃ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┃ ┣ 📜chroma.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜chroma.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜mongo.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜mongo.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜__init__.cpython-310.pyc
+ ┃ ┃ ┃ ┗ 📜__init__.cpython-312.pyc
+ ┃ ┃ ┣ 📜chroma.py
+ ┃ ┃ ┣ 📜mongo.py
+ ┃ ┃ ┗ 📜__init__.py
+ ┃ ┣ 📂models
+ ┃ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┃ ┣ 📜answer.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜answer.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜auth.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜base.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜base.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜user.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜user.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜__init__.cpython-310.pyc
+ ┃ ┃ ┃ ┗ 📜__init__.cpython-312.pyc
+ ┃ ┃ ┣ 📜answer.py
+ ┃ ┃ ┣ 📜auth.py
+ ┃ ┃ ┣ 📜base.py
+ ┃ ┃ ┣ 📜user.py
+ ┃ ┃ ┗ 📜__init__.py
+ ┃ ┣ 📂schemas
+ ┃ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┃ ┣ 📜ai.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜ai.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜answer.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜answer.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜base.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜base.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜usuario.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜usuario.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜__init__.cpython-310.pyc
+ ┃ ┃ ┃ ┗ 📜__init__.cpython-312.pyc
+ ┃ ┃ ┣ 📜ai.py
+ ┃ ┃ ┣ 📜answer.py
+ ┃ ┃ ┣ 📜base.py
+ ┃ ┃ ┣ 📜usuario.py
+ ┃ ┃ ┗ 📜__init__.py
+ ┃ ┣ 📂usecases
+ ┃ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┃ ┣ 📜ai.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜ai.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜answer.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜answer.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜auth.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜embedding.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜embedding.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜user.cpython-310.pyc
+ ┃ ┃ ┃ ┣ 📜user.cpython-312.pyc
+ ┃ ┃ ┃ ┣ 📜__init__.cpython-310.pyc
+ ┃ ┃ ┃ ┗ 📜__init__.cpython-312.pyc
+ ┃ ┃ ┣ 📜ai.py
+ ┃ ┃ ┣ 📜answer.py
+ ┃ ┃ ┣ 📜auth.py
+ ┃ ┃ ┣ 📜embedding.py
+ ┃ ┃ ┣ 📜user.py
+ ┃ ┃ ┗ 📜__init__.py
+ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┣ 📜main.cpython-310.pyc
+ ┃ ┃ ┣ 📜main.cpython-312.pyc
+ ┃ ┃ ┣ 📜routers.cpython-310.pyc
+ ┃ ┃ ┣ 📜routers.cpython-312.pyc
+ ┃ ┃ ┣ 📜__init__.cpython-310.pyc
+ ┃ ┃ ┗ 📜__init__.cpython-312.pyc
+ ┃ ┣ 📜main.py
+ ┃ ┣ 📜routers.py
+ ┃ ┗ 📜__init__.py
+ ┣ 📂doc
+ ┃ ┗ 📂img
+ ┃ ┃ ┣ 📜Diagrama BD API V2.drawio.png
+ ┃ ┃ ┗ 📜Diagrama de rotas.png
+ ┣ 📂tests
+ ┃ ┣ 📂controllers
+ ┃ ┃ ┣ 📜test_ai.py
+ ┃ ┃ ┣ 📜test_answer.py
+ ┃ ┃ ┗ 📜__init__.py
+ ┃ ┣ 📂schemas
+ ┃ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┃ ┣ 📜test_usuario.cpython-312-pytest-8.3.5.pyc
+ ┃ ┃ ┃ ┗ 📜__init__.cpython-312.pyc
+ ┃ ┃ ┣ 📜test_ai.py
+ ┃ ┃ ┣ 📜test_answer.py
+ ┃ ┃ ┣ 📜test_usuario.py
+ ┃ ┃ ┗ 📜__init__.py
+ ┃ ┣ 📂usecases
+ ┃ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┃ ┣ 📜test_user.cpython-312-pytest-8.3.5.pyc
+ ┃ ┃ ┃ ┗ 📜__init__.cpython-312.pyc
+ ┃ ┃ ┣ 📜test_ai.py
+ ┃ ┃ ┣ 📜test_user.py
+ ┃ ┃ ┗ 📜__init__.py
+ ┃ ┣ 📂__pycache__
+ ┃ ┃ ┣ 📜conftest.cpython-312-pytest-8.3.5.pyc
+ ┃ ┃ ┣ 📜factories.cpython-312.pyc
+ ┃ ┃ ┗ 📜__init__.cpython-312.pyc
+ ┃ ┣ 📜conftest.py
+ ┃ ┣ 📜factories.py
+ ┃ ┗ 📜__init__.py
+ ┣ 📜.env
+ ┣ 📜.env.example
+ ┣ 📜.git
+ ┣ 📜.gitignore
+ ┣ 📜.pre-commit-config.yaml
+ ┣ 📜.python-version
+ ┣ 📜LICENSE
+ ┣ 📜Makefile
+ ┣ 📜poetry.lock
+ ┣ 📜pyproject.toml
+ ┣ 📜README.md
+ ┗ 📜requirements.txt
