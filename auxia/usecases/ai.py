@@ -18,7 +18,8 @@ Baseado no contexto abaixo:
 
 {context}
 
-Responda utilizando o contexto a seguinte pergunta: {question}
+Responda utilizando e referenciando o contexto a seguinte pergunta: {question}
+!important include fonte!
 """
 
 # Cenários de randomização: (primeiro modelo, usa RAG?, segundo modelo, usa RAG?)
@@ -45,14 +46,12 @@ class AIUsecase:
 
         def prepare_request(use_rag: bool) -> str:
             if use_rag:
-                # Gera embedding e contexto
                 embedding = embedding_usecase.embed_text(text=request.prompt)
-                context = self.getContext(embedding=embedding, prompt=None)
+                context   = self.getContext(embedding=embedding, prompt=None)
                 return self.getPromptWithContext(context=context, question=request.prompt)
-            # sem RAG: usa prompt original
             return request.prompt
 
-        # Prepara prompts para cada chamada
+        # Prepara prompts
         prompt1 = prepare_request(first_rag)
         prompt2 = prepare_request(second_rag)
 
@@ -60,32 +59,36 @@ class AIUsecase:
         req1 = AiRequest(prompt=prompt1)
         req2 = AiRequest(prompt=prompt2)
 
-        # Executa chamadas às LLMs
+        # Executa chamadas
         if first_key == "llm1":
             response1 = self.callLLM_GoogleAiStudio(req1)
-            model1 = self.modelLlm1
+            model1    = self.modelLlm1
         else:
             response1 = self.callLLM_OpenRouter(req1)
-            model1 = self.modelLlm2
+            model1    = self.modelLlm2
 
         if second_key == "llm1":
             response2 = self.callLLM_GoogleAiStudio(req2)
-            model2 = self.modelLlm1
+            model2    = self.modelLlm1
         else:
             response2 = self.callLLM_OpenRouter(req2)
-            model2 = self.modelLlm2
+            model2    = self.modelLlm2
 
-        # Verifica erros
         if response1 is not None and response2 is not None:
+            # Retorna também as flags de RAG
             return AiResponse(
                 response1=response1,
                 response2=response2,
                 modelLlm1=model1,
                 modelLlm2=model2,
+                is_rag1=first_rag,
+                is_rag2=second_rag,
             )
-        err1 = "Tudo certo com a primeira LLM" if response1 is not None else "Erro na primeira LLM"
-        err2 = "Tudo certo com a segunda LLM"  if response2 is not None else "Erro na segunda LLM"
-        raise AIGenerateException(message=err1 + "; " + err2)
+        # Validação de erros
+        err1 = "Erro na primeira LLM" if response1 is None else ""
+        err2 = "Erro na segunda LLM"  if response2 is None else ""
+        raise AIGenerateException(message=f"{err1} {err2}".strip())
+
 
     def callMainLLMsAllRag(self, request: AiRequest) -> AiResponse:
         """
@@ -192,9 +195,9 @@ class AIUsecase:
         metas = context.get("metadatas", [])
         for i, (doc_list, dist_list) in enumerate(zip(docs, dists)):
             for j, (doc, dist) in enumerate(zip(doc_list, dist_list)):
-                if dist < 0.8:
+                if dist < 1.0:
                     meta = metas[i][j] if metas and i < len(metas) and j < len(metas[i]) else {}
-                    fonte = meta.get("source", "desconhecida")
+                    fonte = meta.get("Title", "desconhecida")
                     chunks.append(f"{doc}\n\nFonte: {fonte}")
         context_text = "\n\n---\n\n".join(chunks)
         prompt_template = ChatPromptTemplate.from_template(BASE_PROMPT)

@@ -57,6 +57,9 @@ class AnswerRequest(BaseSchemaIn):
     ans_prefered_answer_justify: str = Field(
         ..., description="Justification for why this is the preferred answer"
     )
+    ans_is_rag: bool = Field(
+        ..., description="Is with rag or not?"
+    )
 
 class AnswerExport(BaseSchemaIn):
     prompt: str
@@ -66,4 +69,4 @@ class AnswerExport(BaseSchemaIn):
     justifications: Dict[str, str]
     preferred: bool
     preferred_justify: str
-
+    is_rag: bool
