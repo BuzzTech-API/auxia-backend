@@ -12,11 +12,10 @@ class AnswerUsecase:
         self.database: AsyncIOMotorDatabase = self.client.get_database(database)
         self.collection = self.database.get_collection("answer")
 
-    async def saveAnswer(self, answer: AnswerRequest):
+    async def saveAnswer(self, answer: AnswerModel):
         try:
-            answer_data = AnswerModel(**answer.model_dump())
 
-            await self.collection.insert_one(answer_data.model_dump())
+            await self.collection.insert_one(answer.model_dump())
             return {"message": "Resposta Salva com sucesso!"}
 
         except Exception as e:

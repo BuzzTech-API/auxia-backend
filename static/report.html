@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 1cm; }
+    header { display: flex; flex-direction: column; text-align: center; margin-bottom: 1.5cm; align-items: center; }
+    header img {
+      max-width: 200px;
+      max-height: 80px;
+      width: auto;
+      height: auto;
+      display: block;
+      margin: 0 auto 0.5cm;
+    }
+    h1 { font-size: 24pt; margin-bottom: 0.5cm; }
+    section {
+    /* Permite quebra dentro de seções grandes para evitar páginas em branco */
+    page-break-inside: auto;
+    break-inside: auto;
+    margin-bottom: 1.2cm;
+}
+    .chart { text-align: center; margin: 1cm 0; }
+
+    /* GRID 2 colunas e cartão arredondado */
+    .pair-block { margin-bottom: 1.5cm; }
+    .card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1cm;
+      max-width: 600px;
+      width: 100%;              /* ocupa toda a largura disponível */
+      box-sizing: border-box;   /* inclui padding na largura */
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      padding: 1cm;
+      margin-bottom: 1cm;
+      background: #fafafa;
+      /* evita quebra interna do card */
+      page-break-inside: avoid;
+      break-inside: avoid;
+}
+    .card-left { overflow-wrap: break-word; padding-right: 0.5cm; }
+    .card-right { font-size: 0.9em; padding-left: 0.5cm; }
+    .card-right ul { list-style: none; padding: 0; margin: 0; }
+    .card-right li { margin-bottom: 0.4cm; }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="data:image/png;base64,{{ logo_base64 }}" alt="logo">
+    <h1>Relatório de Avaliações</h1>
+  </header>
+
+  <section>
+    <h2>Introdução</h2>
+    <p>Este documento contém {{ total_answers }} respostas analisadas.</p>
+    <p>As avaliações apresentadas foram geradas com base nos critérios salvos no sistema.</p>
+  </section>
+
+  <section>
+    <h2>Gráficos e Análise</h2>
+    <div class="chart"><img src="data:image/png;base64,{{ bar_chart }}" /></div>
+
+    {% for model in models %}
+      <div class="chart">
+        <h3>Preferência RAG vs Sem RAG – {{ model }}</h3>
+        <img src="data:image/png;base64,{{ pie_charts[model] }}" />
+      </div>
+    {% endfor %}
+  </section>
+
+  {% if comparison_charts %}
+  <section>
+    <h2>Comparações Entre Modelos</h2>
+    {% for key, img in comparison_charts.items() %}
+      <div class="chart">
+        <h3>{{ key.replace('_vs_',' vs ') }}</h3>
+        <img src="data:image/png;base64,{{ img }}" />
+      </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  <section>
+    <h2>Detalhamento de Avaliações</h2>
+    {% for (prompt, pid), group in pairs.items() %}
+      {% set sorted_resps = group|sort(attribute="ans_pair_position") %}
+
+      <h3>Prompt: {{ prompt }}</h3>
+
+      {% for resp in sorted_resps %}
+        <div class="card">
+          <div class="card-left">
+            {{ resp.answer_html | safe }}
+          </div>
+          <div class="card-right">
+            <h4>Resposta {{ resp.ans_pair_position }} – Modelo: {{ resp.ans_llm_model }}</h4>
+            <p><strong>RAG:</strong> {{ resp.ans_is_rag and "Sim" or "Não" }}<br>
+               <strong>Preferida:</strong> {{ resp.ans_prefered_answer or "nenhuma" }}</p>
+            <ul>
+              {% for k, v in resp.scores.items() %}
+                <li><strong>{{ k.replace('_',' ') }}:</strong> {{ v }}<br>
+                    <em>Justif.:</em> {{ resp.justifications[k] }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      {% endfor %}
+
+            {% set winner = (sorted_resps[0].ans_prefered_answer or sorted_resps[1].ans_prefered_answer) or "nenhuma" %}
+      <p><strong>{{ winner }}</strong></p>
+    {% endfor %}
+  </section>
+
+  <section>
+    <h2>Conclusão</h2>
+    {% if best_model %}
+      <p>
+        O modelo <strong>{{ best_model }}</strong> obteve a maior pontuação média
+        ({{ avg_scores[best_model] | round(2) }}).
+      </p>
+      <p>
+        Média geral: Com RAG: <strong>{{ avg_rag | round(2) }}</strong>,
+        Sem RAG: <strong>{{ avg_no_rag | round(2) }}</strong>.
+      </p>
+      <p>
+        A utilização de RAG
+        <strong>{{ "teve" if rag_made_difference else "não teve" }}</strong>
+        impacto significativo nas pontuações.
+      </p>
+    {% else %}
+      <p>Não há dados suficientes para gerar a conclusão.</p>
+    {% endif %}
+  </section>
+
+</body>
+</html>
+

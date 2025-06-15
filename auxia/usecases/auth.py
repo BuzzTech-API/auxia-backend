@@ -29,7 +29,7 @@ class AuthUsecase:
     def __init__(self) -> None:
         self.ALGORITHM = "HS256"
         self.SECRET_KEY = settings.SECRET_KEY
-        self.ACCESS_TOKEN_EXPIRE_MINUTES = 5
+        self.ACCESS_TOKEN_EXPIRE_MINUTES = 15
         self.REFRESH_TOKEN_EXPIRE_DAYS = 30
 
         self.user_usecase = user_usecase

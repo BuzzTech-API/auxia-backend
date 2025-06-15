@@ -1,4 +1,5 @@
 from typing import Dict
+from uuid import uuid4
 from pydantic import Field
 
 from auxia.schemas.base import BaseSchemaIn
@@ -70,3 +71,5 @@ class AnswerExport(BaseSchemaIn):
     preferred: bool
     preferred_justify: str
     is_rag: bool
+    ans_pair_id: str
+    ans_pair_position: int
