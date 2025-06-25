@@ -27,8 +27,8 @@
     .card {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1cm;
-      max-width: 600px;
+      gap: 0.3cm;
+      min-width: 650px;
       width: 100%;              /* ocupa toda a largura disponível */
       box-sizing: border-box;   /* inclui padding na largura */
       border: 1px solid #ccc;
@@ -69,6 +69,53 @@
       </div>
     {% endfor %}
   </section>
+
+  <section>
+    <h2>Distribuição das Notas por Métrica</h2>
+    <div class="chart-grid">
+      {% for k in score_keys %}
+        <div class="chart">
+          <h4>{{ k.replace('_',' ') | title }}</h4>
+          <img src="data:image/png;base64,{{ score_dist_charts[k] }}" />
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <h2>Viés de Preferência por Posição</h2>
+    <div class="chart">
+      <img src="data:image/png;base64,{{ position_pref_chart }}" />
+    </div>
+  </section>
+
+  <section>
+    <h2>Correlação entre Métricas</h2>
+    <div class="chart">
+      <img src="data:image/png;base64,{{ correlation_chart }}" />
+    </div>
+  </section>
+
+  <section>
+    <h2>Desempenho Médio dos Modelos por Métrica</h2>
+    <div class="chart">
+      <img src="data:image/png;base64,{{ radar_chart }}" />
+    </div>
+  </section>
+
+  <section>
+    <h2>Nuvem de Palavras das Justificativas</h2>
+    <div class="chart-grid">
+      {% for k in score_keys %}
+        <div class="chart">
+          <h4>{{ k.replace('_',' ') | title }}</h4>
+          <img src="data:image/png;base64,{{ wordclouds[k] }}" />
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+
 
   {% if comparison_charts %}
   <section>

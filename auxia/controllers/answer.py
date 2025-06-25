@@ -22,6 +22,11 @@ from auxia.usecases.graph import (
     create_stacked_bar,
     create_pie_chart,
     create_comparison_chart,
+    create_score_distribution_charts,
+    create_position_preference_chart,
+    create_correlation_heatmap,
+    create_wordcloud_justifications,
+    create_model_radar_chart,
 )
 
 router = APIRouter(prefix="/answer", tags=["answer"])
@@ -155,6 +160,17 @@ async def export_pdf(current_user=Security(get_current_active_user, scopes=["exp
             buf = create_comparison_chart(docs, x, y)
             comparison_charts[f"{x}_vs_{y}"] = base64.b64encode(buf.read()).decode()
 
+    score_dist_charts = create_score_distribution_charts(docs, score_keys)
+    score_dist_charts_b64 = {k: base64.b64encode(v.read()).decode() for k, v in score_dist_charts.items()}
+
+    position_pref_chart_b64 = base64.b64encode(create_position_preference_chart(docs).read()).decode()
+    correlation_chart_b64 = base64.b64encode(create_correlation_heatmap(docs, score_keys).read()).decode()
+    radar_chart_b64 = base64.b64encode(create_model_radar_chart(docs, score_keys).read()).decode()
+
+    wordclouds_b64 = {}
+    for k in score_keys:
+        buf = create_wordcloud_justifications(docs, k)
+        wordclouds_b64[k] = base64.b64encode(buf.read()).decode()
     totals = {m: [] for m in models}
     for d in docs:
         totals[d["ans_llm_model"]].append(sum(d["scores"].values()))
@@ -190,6 +206,12 @@ async def export_pdf(current_user=Security(get_current_active_user, scopes=["exp
         best_model=best_model,
         rag_made_difference=rag_made_difference,
         pairs=pairs,
+        score_dist_charts=score_dist_charts_b64,
+        position_pref_chart=position_pref_chart_b64,
+        correlation_chart=correlation_chart_b64,
+        radar_chart=radar_chart_b64,
+        wordclouds=wordclouds_b64,
+        score_keys=score_keys,
     )
 
     pdf = HTML(string=html).write_pdf()
@@ -199,11 +221,11 @@ async def export_pdf(current_user=Security(get_current_active_user, scopes=["exp
         headers={"Content-Disposition": "attachment; filename=relatorio_avaliacoes.pdf"},
     )
 
-    #@router.get(
+@router.get(
     "/export/html",
     summary="Preview do HTML que vira PDF",
     response_class=HTMLResponse,
-# )
+ )
 async def preview_html(request: Request):
     raw_docs = [doc async for doc in answer_usecase.collection.find({})]
     score_keys = [
@@ -245,6 +267,18 @@ async def preview_html(request: Request):
             buf = create_comparison_chart(docs, x, y)
             comparison_charts[key] = base64.b64encode(buf.read()).decode()
 
+    score_dist_charts = create_score_distribution_charts(docs, score_keys)
+    score_dist_charts_b64 = {k: base64.b64encode(v.read()).decode() for k, v in score_dist_charts.items()}
+
+    position_pref_chart_b64 = base64.b64encode(create_position_preference_chart(docs).read()).decode()
+    correlation_chart_b64 = base64.b64encode(create_correlation_heatmap(docs, score_keys).read()).decode()
+    radar_chart_b64 = base64.b64encode(create_model_radar_chart(docs, score_keys).read()).decode()
+
+    wordclouds_b64 = {}
+    for k in score_keys:
+        buf = create_wordcloud_justifications(docs, k)
+        wordclouds_b64[k] = base64.b64encode(buf.read()).decode()
+
     totals = {m: [] for m in models}
     for d in docs:
         totals[d["ans_llm_model"]].append(sum(d["scores"].values()))
@@ -278,4 +312,11 @@ async def preview_html(request: Request):
         "best_model": best_model,
         "rag_made_difference": rag_made_difference,
         "pairs": pairs,
+        "score_dist_charts":score_dist_charts_b64,
+        "position_pref_chart":position_pref_chart_b64,
+        "correlation_chart":correlation_chart_b64,
+        "radar_chart":radar_chart_b64,
+        "wordclouds":wordclouds_b64,
+        "score_keys":score_keys,
+
     })

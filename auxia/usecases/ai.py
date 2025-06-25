@@ -25,10 +25,10 @@ Responda utilizando e referenciando o contexto a seguinte pergunta: {question}
 # Cenários de randomização: (primeiro modelo, usa RAG?, segundo modelo, usa RAG?)
 _SCENARIOS = [
     ("llm1", True,  "llm1", False),
-    ("llm1", True,  "llm2", False),
-    ("llm2", True,  "llm2", False),
-    ("llm2", True,  "llm1", False),
-    ("llm1", True,  "llm2", True),
+#    ("llm1", True,  "llm2", False),
+#    ("llm2", True,  "llm2", False),
+#    ("llm2", True,  "llm1", False),
+#    ("llm1", True,  "llm2", True),
 ]
 
 class AIUsecase:
